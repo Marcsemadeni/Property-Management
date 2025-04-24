@@ -79,8 +79,6 @@ public class Property
     ListOfProperties.Add(new Property(3, "789 Pine Rd", "image3.jpg", 2, 1, 1100, 0.15, 1, 1300, 6, 1));
     ListOfProperties.Add(new Property(4, "321 Birch Blvd", "image4.jpg", 5, 4, 3000, 0.5, 3, 3100, 36, 3));
     ListOfProperties.Add(new Property(5, "654 Cedar Ct", "image5.jpg", 3, 2, 1600, 0.2, 2, 1700, 18, 2));
-    
-    Console.WriteLine("Sample properties loaded.");
 }
 
     public static void AddProperty(Property property)
@@ -89,12 +87,6 @@ public class Property
         ListOfProperties.Add(property);
         Console.WriteLine("Property added successfully.");
     }
-
-    // public static void ViewProperty(int propertyID)
-    // {
-        
-        
-    // }
 
     public void DisplayPropertyDetails()
 {
@@ -112,13 +104,6 @@ public class Property
     Console.WriteLine($"Floor Levels: {FloorLevels}");
     Console.WriteLine("----------------------------");
 }
-
-
-     public static void ListALLProperties(int propertyID)
-    {
-        
-
-    }
 
 
     public void RemoveProperty()
