@@ -3,7 +3,7 @@
 
 public class Inspections
 {
-    public string type { get; set; }
+    public string Type { get; set; }
 
     public void ScheduleInspection()
     {
