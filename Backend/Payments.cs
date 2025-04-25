@@ -58,19 +58,30 @@ public class Payment
 
         public static Payment CreatePayment()
         {
-            Console.WriteLine("Please enter the payment ID:");
-            int paymentID = int.Parse(Console.ReadLine());
+        int paymentID;
 
-            Console.WriteLine("Please enter the lease ID:");
-            int leaseID = int.Parse(Console.ReadLine());
+    // Check if PaymentID already exists
+    while (true)
+    {
+        paymentID = UI.GetValidatedInt("Please enter the payment ID: ");
+        bool exists = Payment.ListOfPayments.Any(p => p.PaymentID == paymentID);
 
-            Console.Write("Enter the payment amount: ");
-            int amount = int.Parse(Console.ReadLine());
+        if (exists)
+        {
+            Console.WriteLine("That Payment ID already exists. Please enter a different ID.");
+        }
+        else
+        {
+            break;
+        }
+    }
 
-            Console.Write("Enter the date paid (MM/DD/YYYY): ");
-            DateTime datePaid = DateTime.Parse(Console.ReadLine());
+        int leaseID   = UI.GetValidatedInt("Please enter the lease ID: ");
+        int amount    = UI.GetValidatedInt("Enter the payment amount: ");
 
-            return new Payment(paymentID, leaseID, amount, datePaid);
+        DateTime datePaid = UI.GetValidatedDateTime("Enter the date paid (MM/DD/YYYY): ");
+
+        return new Payment(paymentID, leaseID, amount, datePaid);
         }
 
         public static void SeedPayments()

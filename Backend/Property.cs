@@ -34,6 +34,7 @@ public class Property
         FloorLevels = floorLevels;
     }
 
+/*
     public static Property CreateProperty()
 {
     Console.WriteLine("Please enter the property ID:");
@@ -71,6 +72,46 @@ public class Property
 
     return new Property(propertyID, address, image, bedrooms, baths, sqft, acres, garage, rent, contract, levels);
 }
+*/
+
+public static Property CreateProperty()
+{
+    int propertyID;
+
+    // Check if PropertyID already exists
+    while (true)
+    {
+        propertyID = UI.GetValidatedInt("Please enter the property ID: ");
+        bool exists = Property.ListOfProperties.Any(p => p.PropertyID == propertyID);
+
+        if (exists)
+        {
+            Console.WriteLine("That Property ID already exists. Please enter a different ID.");
+        }
+        else
+        {
+            break;
+        }
+    }
+    
+    Console.Write("Enter the property address: ");
+    string address = Console.ReadLine();
+
+    Console.Write("Enter the image file name or URL: ");
+    string image = Console.ReadLine();
+
+    int bedrooms = UI.GetValidatedInt("Enter number of bedrooms: ");
+    int baths = UI.GetValidatedInt("Enter number of bathrooms: ");
+    int sqft = UI.GetValidatedInt("Enter square footage: ");
+    double acres = UI.GetValidatedDouble("Enter number of acres: ");
+    int garage = UI.GetValidatedInt("Enter number of garage spaces: ");
+    int rent = UI.GetValidatedInt("Enter monthly rent: ");
+    int contract = UI.GetValidatedInt("Enter contract length (months): ");
+    int levels = UI.GetValidatedInt("Enter number of floor levels: ");
+
+    return new Property(propertyID, address, image, bedrooms, baths, sqft, acres, garage, rent, contract, levels);
+}
+
     
     public static void LoadSampleProperties()
 {

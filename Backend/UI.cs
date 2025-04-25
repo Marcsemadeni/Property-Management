@@ -7,9 +7,11 @@ namespace PropertyManagement
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static void Main()
     {
-        Console.WriteLine("Hello, World!");
+        // Property.LoadSampleProperties(); // Load sample properties at the start
+        // Lease.SeedLeases(); // Load sample leases at the start
+        // Payment.SeedPayments(); // Load sample payments at the start
         UI ui = new UI();
         ui.MainMenu();
     }
@@ -17,13 +19,10 @@ public class Program
 
 public class UI 
 {
+    
 
    public void MainMenu()
 {
-    Property.LoadSampleProperties(); // Load sample properties at the start
-    Lease.SeedLeases(); // Load sample leases at the start
-    Payment.SeedPayments(); // Load sample payments at the start
-
     Console.WriteLine("Please select what you would like to use:\n" +
                       "P: Property\n" +
                       "U: User\n" +
@@ -99,9 +98,9 @@ public void GoToPropertyClass()
         ClassToMenu("Property",GoToPropertyClass); // Call the method to return to the property menu or main menu
         break;
 
-        case "E":
-        //Edit a property
-        break;
+        // case "E":
+        // //Edit a property
+        // break;
 
         default:
             Console.WriteLine("Invalid input. Please enter C, V, E, or A");
@@ -140,9 +139,9 @@ public void GoToPropertyClass()
         ClassToMenu("Lease", GoToLeaseClass); // Call the method to return to the lease menu or main menu
         break;
 
-        case "E":
-        //Edit a property
-        break;
+        // case "E":
+        // //Edit a lease
+        // break;
 
         default:
             Console.WriteLine("Invalid input. Please enter C, V, E, A");
@@ -189,8 +188,15 @@ public void GoToPropertyClass()
 
 public void ViewPaymentDetails()
 {
+    if (Payment.ListOfPayments.Count == 0)
+    {
+        Console.WriteLine("There are no payments to view.");
+        ClassToMenu("Payment", GoToPaymentClass);
+        return;
+    }
+
     Console.WriteLine("Enter the Payment ID you'd like to view:");
-    int id = int.Parse(Console.ReadLine());
+    int id = UI.GetValidatedInt("");
 
     Payment match = Payment.ListOfPayments.Find(p => p.PaymentID == id);
     if (match != null)
@@ -201,7 +207,7 @@ public void ViewPaymentDetails()
     else
     {
         Console.WriteLine("No payment found with that ID.");
-        ViewPaymentDetails();
+        ViewPaymentDetails(); // Optionally call again or return to menu
     }
 }
 
@@ -229,57 +235,51 @@ public void ViewPaymentDetails()
 
     public void ViewPropertyDetails()
 {
-    Console.WriteLine("Please enter the property ID you would like to view:");
-    string input = Console.ReadLine();
-    int propertyID;
-
-    if (int.TryParse(input, out propertyID))
+    if (Property.ListOfProperties.Count == 0)
     {
-        Property match = Property.ListOfProperties.Find(p => p.PropertyID == propertyID);
-        if (match != null)
-        {
-            match.DisplayPropertyDetails(); // Call the instance method on the matched property
-            ClassToMenu("Property", GoToPropertyClass); // Call the method to return to the property menu or main menu
-        }
-        else
-        {
-            Console.WriteLine("Invalid Property ID. Please try again.");
-            ViewPropertyDetails(); // Ask again
-        }
+        Console.WriteLine("There are no properties to view.");
+        ClassToMenu("Property", GoToPropertyClass);
+        return;
+    }
+
+    Console.WriteLine("Enter the Property ID you'd like to view:");
+    int id = UI.GetValidatedInt("");
+
+    Property match = Property.ListOfProperties.Find(p => p.PropertyID == id);
+    if (match != null)
+    {
+        match.DisplayPropertyDetails();
+        ClassToMenu("Property", GoToPropertyClass);
     }
     else
     {
-        Console.WriteLine("Invalid input. Please enter a number for the Property ID.");
-        ViewPropertyDetails(); // Ask again
+        Console.WriteLine("No property found with that ID.");
+        ViewPropertyDetails(); // again, you could return to menu here too
     }
 }
 
 public void ViewLeaseDetails()
 {
-    Console.WriteLine("Please enter the lease term you would like to view:");
-    string input = Console.ReadLine();
-    int leaseID;
-
-    if (int.TryParse(input, out leaseID))
+    if (Lease.ListOfLeases.Count == 0)
     {
-        Lease match = Lease.ListOfLeases.Find(l => l.LeaseID == leaseID);
-        if (match != null)
-        {
-            match.DisplayLeaseDetails(); // Call the instance method on the matched lease
-            Console.WriteLine("Would you like to return to the lease menu? (Y/N)");
-            string returnToLeaseMenu = Console.ReadLine().ToUpper();
-            ClassToMenu(returnToLeaseMenu, GoToLeaseClass); // Generic method to go back
-        }
-        else
-        {
-            Console.WriteLine("Invalid Lease Term. Please try again.");
-            ViewLeaseDetails(); // Ask again
-        }
+        Console.WriteLine("There are no leases to view.");
+        ClassToMenu("Lease", GoToLeaseClass);
+        return;
+    }
+
+    Console.WriteLine("Enter the Lease ID you'd like to view:");
+    int id = UI.GetValidatedInt("");
+
+    Lease match = Lease.ListOfLeases.Find(l => l.LeaseID == id);
+    if (match != null)
+    {
+        match.DisplayLeaseDetails();
+        ClassToMenu("Lease", GoToLeaseClass);
     }
     else
     {
-        Console.WriteLine("Invalid input. Please enter a number for the Lease Term.");
-        ViewLeaseDetails(); // Ask again
+        Console.WriteLine("No lease found with that ID.");
+        ViewLeaseDetails(); // optional: could also return to menu instead
     }
 }
 
@@ -324,6 +324,49 @@ public void ViewLeaseDetails()
         property.DisplayPropertyDetails();
     }
     }
+
+    public static int GetValidatedInt(string prompt)
+{
+    int value;
+    while (true)
+    {
+        Console.Write(prompt);
+        string input = Console.ReadLine();
+        if (int.TryParse(input, out value))
+            return value;
+
+        Console.WriteLine("Invalid input. Please enter a valid number.");
+    }
+}
+
+public static double GetValidatedDouble(string prompt)
+{
+    double value;
+    while (true)
+    {
+        Console.Write(prompt);
+        string input = Console.ReadLine();
+        if (double.TryParse(input, out value))
+            return value;
+
+        Console.WriteLine("Invalid input. Please enter a valid number.");
+    }
+}
+
+public static DateTime GetValidatedDateTime(string prompt)
+{
+    DateTime value;
+    while (true)
+    {
+        Console.Write(prompt);
+        string input = Console.ReadLine();
+        if (DateTime.TryParse(input, out value))
+            return value;
+
+        Console.WriteLine("Invalid date. Please enter the date in MM/DD/YYYY format.");
+    }
+}
+
     
 
 /*

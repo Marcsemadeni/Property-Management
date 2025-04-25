@@ -21,6 +21,7 @@ public class Lease
         this.contract = contract;
     }
 
+/*
     public static Lease CreateLease()
 {
     Console.WriteLine("Please enter the lease ID:");
@@ -40,7 +41,37 @@ public class Lease
 
     return new Lease(LeaseID, leaseTerm, payment, deposit, contract);
 }
+*/
 
+public static Lease CreateLease()
+{
+    //int LeaseID = UI.GetValidatedInt("Please enter the lease ID: ");
+
+    int leaseID;
+
+    while (true)
+    {
+        leaseID = UI.GetValidatedInt("Please enter the lease ID: ");
+        bool exists = Lease.ListOfLeases.Any(l => l.LeaseID == leaseID);
+
+        if (exists)
+        {
+            Console.WriteLine("That Lease ID already exists. Please enter a different ID.");
+        }
+        else
+        {
+            break;
+        }
+    }
+    int leaseTerm   = UI.GetValidatedInt("Please enter the lease term (months): ");
+    double payment  = UI.GetValidatedDouble("Enter the monthly payment: ");
+    double deposit  = UI.GetValidatedDouble("Enter the security deposit amount: ");
+
+    Console.Write("Enter the contract description or filename: ");
+    string contract = Console.ReadLine();
+
+    return new Lease(leaseID, leaseTerm, payment, deposit, contract);
+}
 public static void SeedLeases()
 {
     ListOfLeases.Add(new Lease(1, 6, 1200.00, 600.00, "Short-term lease with option to renew."));
