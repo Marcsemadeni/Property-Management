@@ -1,6 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-
+﻿
 namespace PropertyManagement
 {
 
@@ -124,7 +122,7 @@ public class Program
 
         public void GoToUserMenu()
         {
-            Console.WriteLine("1: Add Tenant\n2: Add Staff\n3: Add Generic User\n4: Remove User\n5: Show All Users\n6: Back");
+            Console.WriteLine("1: Add Tenant\n2: Add Staff\n3: Remove User\n4: Show All Users\n5: Back");
             string choice = Console.ReadLine();
 
             switch (choice)
@@ -144,35 +142,26 @@ public class Program
                     userManager.AddUser(staff);
                     break;
                 case "3":
-                    Console.Write("Name: ");
-                    string name = Console.ReadLine();
-                    Console.Write("Phone Number: ");
-                    string phone = Console.ReadLine();
-                    Console.Write("Email: ");
-                    string email = Console.ReadLine();
-                    var user = new User { Name = name, PhoneNumber = phone, Email = email };
-                    userManager.AddUser(user);
-                    break;
-                case "4":
                     Console.Write("Email of user to remove: ");
                     string emailToRemove = Console.ReadLine();
                     userManager.RemoveUser(emailToRemove);
                     break;
-                case "5":
+                case "4":
                     var allUsers = userManager.GetAllUsers();
                     foreach (var u in allUsers)
                     {
                         Console.WriteLine($"{u.GetType().Name}: {u.Name} - {u.Email}");
                     }
                     break;
-                case "6":
+                case "5":
                     MainMenu();
                     return;
                 default:
                     Console.WriteLine("Invalid option.");
                     break;
             }
-            GoToUserMenu();
+            // GoToUserMenu();
+            ClassToMenu("User", GoToUserMenu);
         }
 
         public void GoToMaintenanceMenu()
@@ -202,7 +191,8 @@ public class Program
                     Console.WriteLine("Invalid choice.");
                     break;
             }
-            GoToMaintenanceMenu();
+            // GoToMaintenanceMenu();
+            ClassToMenu("Maintenance", GoToMaintenanceMenu);
         }
 
         public void NestedGetTasks()
@@ -314,7 +304,8 @@ public class Program
                     Console.WriteLine("Invalid choice.");
                     break;
             }
-            GoToInspectionMenu();
+            // GoToInspectionMenu();
+            ClassToMenu("Inspection", GoToInspectionMenu);
         }
 
 

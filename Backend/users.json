@@ -15,5 +15,17 @@
     "Name": "le tenant",
     "PhoneNumber": "9876543210",
     "Email": "stuff@email.com"
+  },
+  {
+    "Type": "Staff",
+    "Name": "broken?",
+    "PhoneNumber": "9874563210",
+    "Email": "beans@hotmail.com"
+  },
+  {
+    "Type": "Staff",
+    "Name": "Joe",
+    "PhoneNumber": "8017415842",
+    "Email": "JoeTheStaff@mail.com"
   }
 ]

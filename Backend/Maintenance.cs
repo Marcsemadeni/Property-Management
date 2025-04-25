@@ -189,38 +189,3 @@ public class MaintenanceManager
     }
 
 }
-
-
-// Example use
-
-// var maintenanceManager = new MaintenanceManager();
-
-// var task = new Maintenance();
-// task.CreateMaintenance("Check HVAC", "Seasonal inspection", DateTime.Today.AddDays(10), 1);
-
-// maintenanceManager.AddTask(task);
-// maintenanceManager.UpdateTask("Check HVAC", true); // Mark as completed
-
-// var allTasks = maintenanceManager.GetAllTasks();
-// foreach (var t in allTasks)
-// {
-//     Console.WriteLine(t);
-// }
-
-
-
-
-
-
-
-// Console.WriteLine("\nHigh Priority Tasks:");
-// foreach (var t in maintenanceManager.GetHighPriorityTasks())
-//     Console.WriteLine(t);
-
-// Console.WriteLine("\nOverdue Tasks:");
-// foreach (var t in maintenanceManager.GetOverdueTasks())
-//     Console.WriteLine(t);
-
-// Console.WriteLine("\nTasks Due in Next 7 Days:");
-// foreach (var t in maintenanceManager.GetUpcomingTasks(7))
-//     Console.WriteLine(t);

@@ -7,7 +7,7 @@ public class Inspection
     public string Type { get; set; }
     public DateTime DateScheduled { get; set; }
     public string PropertyID { get; set; }
-    public string PropertyAddress { get; set; } // Optional: for display
+    public string PropertyAddress { get; set; }
     public string InspectorName { get; set; }
 
     public string ConditionNotes { get; set; }
@@ -119,34 +119,3 @@ public class InspectionManager
         }
     }
 }
-
-
-
-
-
-// var inspection = new Inspection();
-// inspection.Schedule("Move-in", DateTime.Today.AddDays(2), "123 Main St", "Alex Smith");
-
-// inspection.EvaluateCondition("Walls freshly painted, plumbing looks good.");
-// inspection.GenerateReport();
-
-// Console.WriteLine(inspection.ReportContent);
-
-
-
-
-
-// var inspection = new Inspection();
-// inspection.Schedule(
-//     type: "Move-in",
-//     date: DateTime.Today.AddDays(3),
-//     propertyID: "P-0001",
-//     propertyName: "Pineview Apts #204",
-//     inspector: "Jessica Ruiz"
-// );
-
-// inspection.EvaluateCondition("Carpets newly cleaned. Electrical panel needs label update.");
-// inspection.GenerateReport();
-
-// inspectionManager.AddInspection(inspection);
-

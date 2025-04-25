@@ -22,7 +22,7 @@ public class Tenant : User
 
 public class Staff : User
 {
-    // Add staff-specific properties if needed
+    // Add staff specific properties if needed
 }
 
 public class UserManager
@@ -32,7 +32,7 @@ public class UserManager
 
     public UserManager()
     {
-        LoadUsers(); // Load on startup
+        LoadUsers();
     }
 
     public void AddUser(User user)
@@ -54,7 +54,7 @@ public class UserManager
         if (userToRemove != null)
         {
             users.Remove(userToRemove);
-            SaveUsers(); // Save after removal
+            SaveUsers();
             Console.WriteLine($"User with email {email} removed.");
             return true;
         }
@@ -176,52 +176,3 @@ public static class TenantManager
         };
     }
 }
-// use in console
-
-// var userManager = new UserManager();
-
-//         Console.WriteLine("1: Add Tenant\n2: Add Staff\n3: Add Generic User\n4: Remove User\n5: Show All Users");
-//         string choice = Console.ReadLine();
-
-//         switch (choice)
-//         {
-//             case "1":
-//                 var tenant = TenantFactory.CreateTenantFromInput();
-//                 userManager.AddUser(tenant);
-//                 break;
-//             case "2":
-//                 Console.Write("Name: ");
-//                 string staffName = Console.ReadLine();
-//                 Console.Write("Phone Number: ");
-//                 string staffPhone = Console.ReadLine();
-//                 Console.Write("Email: ");
-//                 string staffEmail = Console.ReadLine();
-//                 var staff = new Staff { Name = staffName, PhoneNumber = staffPhone, Email = staffEmail };
-//                 userManager.AddUser(staff);
-//                 break;
-//             case "3":
-//                 Console.Write("Name: ");
-//                 string name = Console.ReadLine();
-//                 Console.Write("Phone Number: ");
-//                 string phone = Console.ReadLine();
-//                 Console.Write("Email: ");
-//                 string email = Console.ReadLine();
-//                 var user = new User { Name = name, PhoneNumber = phone, Email = email };
-//                 userManager.AddUser(user);
-//                 break;
-//             case "4":
-//                 Console.Write("Email of user to remove: ");
-//                 string emailToRemove = Console.ReadLine();
-//                 userManager.RemoveUser(emailToRemove);
-//                 break;
-//             case "5":
-//                 var allUsers = userManager.GetAllUsers();
-//                 foreach (var u in allUsers)
-//                 {
-//                     Console.WriteLine($"{u.GetType().Name}: {u.Name} - {u.Email}");
-//                 }
-//                 break;
-//             default:
-//                 Console.WriteLine("Invalid option.");
-//                 break;
-//         }
