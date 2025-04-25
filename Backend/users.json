@@ -1,0 +1,19 @@
+[
+  {
+    "Type": "Staff",
+    "Name": "Jimbo",
+    "PhoneNumber": "8000000000",
+    "Email": "nope@gmail.com"
+  },
+  {
+    "Type": "Tenant",
+    "Payment": 1598,
+    "Employed": false,
+    "MonthlyIncome": 0,
+    "Occupants": 1,
+    "Convicted": false,
+    "Name": "le tenant",
+    "PhoneNumber": "9876543210",
+    "Email": "stuff@email.com"
+  }
+]
