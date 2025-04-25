@@ -1,4 +1,8 @@
 // Ben
+
+using System.IO;
+using System.Text.Json;
+
 namespace PropertyManagement
 {
 public class Lease
@@ -20,28 +24,6 @@ public class Lease
         this.deposit = deposit;
         this.contract = contract;
     }
-
-/*
-    public static Lease CreateLease()
-{
-    Console.WriteLine("Please enter the lease ID:");
-    int LeaseID = int.Parse(Console.ReadLine());
-
-    Console.WriteLine("Please enter the lease term (months):");
-    int leaseTerm = int.Parse(Console.ReadLine());
-
-    Console.Write("Enter the monthly payment: ");
-    double payment = double.Parse(Console.ReadLine());
-
-    Console.Write("Enter the security deposit amount: ");
-    double deposit = double.Parse(Console.ReadLine());
-
-    Console.Write("Enter the contract description or filename: ");
-    string contract = Console.ReadLine();
-
-    return new Lease(LeaseID, leaseTerm, payment, deposit, contract);
-}
-*/
 
 public static Lease CreateLease()
 {
@@ -74,11 +56,11 @@ public static Lease CreateLease()
 }
 public static void SeedLeases()
 {
-    ListOfLeases.Add(new Lease(1, 6, 1200.00, 600.00, "Short-term lease with option to renew."));
-    ListOfLeases.Add(new Lease(2, 12, 1100.00, 1100.00, "Standard 1-year lease."));
-    ListOfLeases.Add(new Lease(3, 18, 1050.00, 1200.00, "Longer lease with discounted rate."));
-    ListOfLeases.Add(new Lease(4, 24, 1000.00, 1000.00, "2-year lease with early termination fee."));
-    ListOfLeases.Add(new Lease(5, 3, 1300.00, 500.00, "Trial lease—3 months only."));
+    // ListOfLeases.Add(new Lease(1, 6, 1200.00, 600.00, "Short-term lease with option to renew."));
+    // ListOfLeases.Add(new Lease(2, 12, 1100.00, 1100.00, "Standard 1-year lease."));
+    // ListOfLeases.Add(new Lease(3, 18, 1050.00, 1200.00, "Longer lease with discounted rate."));
+    // ListOfLeases.Add(new Lease(4, 24, 1000.00, 1000.00, "2-year lease with early termination fee."));
+    // ListOfLeases.Add(new Lease(5, 3, 1300.00, 500.00, "Trial lease—3 months only."));
 }
 
 
@@ -86,6 +68,7 @@ public static void SeedLeases()
     {
         // Add the property to the list
         ListOfLeases.Add(lease);
+        SaveToFile(); 
         Console.WriteLine("Lease added successfully.");
     }
 
@@ -114,6 +97,26 @@ public void DisplayAllLeases()
         Console.WriteLine("---------------------------");
     }
 }
+
+public static void SaveToFile()
+{
+    string json = JsonSerializer.Serialize(ListOfLeases, new JsonSerializerOptions { WriteIndented = true });
+    File.WriteAllText("lease.json", json);
+}
+
+public static void LoadFromFile()
+{
+     if (File.Exists("lease.json") && new FileInfo("lease.json").Length > 0)
+    {
+        string json = File.ReadAllText("lease.json");
+        ListOfLeases = JsonSerializer.Deserialize<List<Lease>>(json) ?? new List<Lease>();
+    }
+    else
+    {
+        ListOfLeases = new List<Lease>();
+    }
+}
+
 
 
 }

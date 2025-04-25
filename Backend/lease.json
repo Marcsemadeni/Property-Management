@@ -1,0 +1,9 @@
+[
+  {
+    "LeaseID": 1,
+    "leaseTerm": 24,
+    "payment": 2500,
+    "deposit": 350,
+    "contract": "legal contract"
+  }
+]

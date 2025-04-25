@@ -1,0 +1,16 @@
+[
+  
+  {
+    "PropertyID": 8,
+    "Address": "your house",
+    "PropertyImage": "online",
+    "Bedrooms": 5,
+    "Baths": 4,
+    "SqFt": 2300,
+    "Acres": 4,
+    "Garage": 3,
+    "MonthlyRent": 2500,
+    "ContractLength": 24,
+    "FloorLevels": 2
+  }
+]

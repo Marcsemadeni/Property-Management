@@ -9,9 +9,10 @@ public class Program
 {
     public static void Main()
     {
-        // Property.LoadSampleProperties(); // Load sample properties at the start
-        // Lease.SeedLeases(); // Load sample leases at the start
-        // Payment.SeedPayments(); // Load sample payments at the start
+        Property.LoadFromFile(); // Load from JSON at the start
+        Lease.LoadFromFile();
+        Payment.LoadFromFile();
+
         UI ui = new UI();
         ui.MainMenu();
     }
@@ -479,9 +480,7 @@ public void ViewLeaseDetails()
         if (match != null)
         {
             match.DisplayLeaseDetails(); // Call the instance method on the matched lease
-            Console.WriteLine("Would you like to return to the lease menu? (Y/N)");
-            string returnToLeaseMenu = Console.ReadLine().ToUpper();
-            ClassToMenu(returnToLeaseMenu, GoToLeaseClass); // Generic method to go back
+            ClassToMenu("Lease", GoToLeaseClass); // Generic method to go back
         }
         else
         {

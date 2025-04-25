@@ -1,44 +1,11 @@
 // Ben
 
+using System.IO;
+using System.Text.Json;
+
+
 namespace PropertyManagement
 {
-
-    /*
-public class Payment
-{
-    public double PaymentAmount { get; set; }
-    public DateTime DueDate { get; set; }
-
-
-    public Payment(double paymentAmount, DateTime dueDate)
-    {
-        PaymentAmount = paymentAmount;
-        DueDate = dueDate;
-    }
-
-
-    public void ProcessPayment()
-    {
-
-
-    }
-
-    public void applyLateFee()
-    {
-
-
-    }
-
-
-    public void generateReciept()
-    {
-
-
-    }
-
-    
-}
-*/
 
 public class Payment
     {
@@ -86,16 +53,17 @@ public class Payment
 
         public static void SeedPayments()
     {
-        ListOfPayments.Add(new Payment(1, 1, 1200, new DateTime(2024, 01, 15)));
-        ListOfPayments.Add(new Payment(2, 2, 1100, new DateTime(2024, 02, 01)));
-        ListOfPayments.Add(new Payment(3, 3, 1050, new DateTime(2024, 03, 01)));
-        ListOfPayments.Add(new Payment(4, 1, 1200, new DateTime(2024, 02, 15)));
-        ListOfPayments.Add(new Payment(5, 5, 1300, new DateTime(2024, 04, 01)));
+        // ListOfPayments.Add(new Payment(1, 1, 1200, new DateTime(2024, 01, 15)));
+        // ListOfPayments.Add(new Payment(2, 2, 1100, new DateTime(2024, 02, 01)));
+        // ListOfPayments.Add(new Payment(3, 3, 1050, new DateTime(2024, 03, 01)));
+        // ListOfPayments.Add(new Payment(4, 1, 1200, new DateTime(2024, 02, 15)));
+        // ListOfPayments.Add(new Payment(5, 5, 1300, new DateTime(2024, 04, 01)));
     }
 
         public static void AddPayment(Payment newPayment)
         {
             ListOfPayments.Add(newPayment);
+            SaveToFile();
         }
 
         public void DisplayPaymentDetails()
@@ -129,5 +97,26 @@ public class Payment
         Console.WriteLine("---------------------------");
     }
         }
+
+public static void SaveToFile()
+{
+    string json = JsonSerializer.Serialize(ListOfPayments, new JsonSerializerOptions { WriteIndented = true });
+    File.WriteAllText("payment.json", json);
+}
+
+public static void LoadFromFile()
+{
+   if (File.Exists("payment.json") && new FileInfo("payment.json").Length > 0)
+    {
+        string json = File.ReadAllText("payment.json");
+        ListOfPayments = JsonSerializer.Deserialize<List<Payment>>(json) ?? new List<Payment>();
+    }
+    else
+    {
+        ListOfPayments = new List<Payment>();
+    }
+}
+
+
     }
 }
