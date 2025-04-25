@@ -355,7 +355,6 @@ public class Program
                     Console.WriteLine("Invalid input. Please enter C, V, E, A");
                     break;
             }
-
         }
 
         public void GoToPaymentClass()
