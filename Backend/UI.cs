@@ -1,496 +1,616 @@
-﻿
+﻿using System;
+using System.Linq;
+
 namespace PropertyManagement
 {
-
-
-public class Program
-{
-    public static void Main()
+    public class Program
     {
-        Property.LoadFromFile(); // Load from JSON at the start
-        Lease.LoadFromFile();
-        Payment.LoadFromFile();
-
-        UI ui = new UI();
-        ui.MainMenu();
+        public static void Main()
+        {
+            Property.LoadFromFile();
+            Lease.LoadFromFile();
+            Payment.LoadFromFile();
+            Console.Clear();
+            UI ui = new UI();
+            ui.MainMenu();
+        }
     }
-}
 
     public class UI
     {
-        UserManager userManager = new UserManager();
-        MaintenanceManager maintenanceManager = new MaintenanceManager();
-        InspectionManager inspectionManager = new InspectionManager();
+        private UserManager userManager = new UserManager();
+        private MaintenanceManager maintenanceManager = new MaintenanceManager();
+        private InspectionManager inspectionManager = new InspectionManager();
 
+        private void DisplayMenu(string title, string[] options, ConsoleColor titleColor = ConsoleColor.Cyan)
+        {
+            Console.Clear();
+            PrintColoredText("====================================\n", titleColor);
+            PrintColoredText($"  {title}\n", titleColor);
+            PrintColoredText("====================================\n", titleColor);
+            Console.WriteLine();
+            for (int i = 0; i < options.Length; i++)
+            {
+                PrintColoredText($"  {i + 1}. {options[i]}\n", ConsoleColor.White);
+            }
+            Console.WriteLine();
+            PrintColoredText("  Enter a number or 'B' to go back, 'X' to exit.\n", ConsoleColor.Yellow);
+            Console.WriteLine();
+        }
+
+        private string GetUserChoice(int maxOptions)
+        {
+            while (true)
+            {
+                PrintColoredText("  Choice: ", ConsoleColor.Green);
+                string input = Console.ReadLine().ToUpper();
+                if (input == "B" || input == "X") return input;
+                if (int.TryParse(input, out int choice) && choice >= 1 && choice <= maxOptions)
+                    return input;
+                PrintColoredText("  Invalid choice. Please enter a number, 'B', or 'X'.\n", ConsoleColor.Red);
+            }
+        }
 
         public void MainMenu()
         {
-            Property.LoadSampleProperties(); // Load sample properties at the start
-            Lease.SeedLeases(); // Load sample leases at the start
-            Payment.SeedPayments(); // Load sample payments at the start
+            string[] options = {
+                "Dashboard",
+                "Properties",
+                "Users",
+                "Maintenance",
+                "Inspections",
+                "Leases",
+                "Payments"
+            };
 
-            Console.WriteLine("Please select what you would like to use:\n" +
-                              "P: Property\n" +
-                              "U: User\n" +
-                              "M: Maintenance\n" +
-                              "I: Inspection\n" +
-                              "L: Lease\n" +
-                              "R: Payment\n" +
-                              "X: Exit the program\n");
-
-            string response = Console.ReadLine().ToUpper();
-
-            switch (response)
+            while (true)
             {
-                case "P":
-                    GoToPropertyClass();
-                    break;
+                DisplayMenu("Property Management System", options);
+                string choice = GetUserChoice(options.Length);
 
-                case "U":
-                    GoToUserMenu();
-                    break;
-
-                case "M":
-                    GoToMaintenanceMenu();
-                    break;
-
-                case "I":
-                    GoToInspectionMenu();
-                    break;
-
-                case "L":
-                    GoToLeaseClass();
-                    break;
-
-                case "R":
-                    GoToPaymentClass();
-                    break;
-
-                case "X":
-                    Console.WriteLine("Exiting the program. Goodbye!");
-                    Environment.Exit(0); // Exit the program
-                    break;
-
-                default:
-                    Console.WriteLine("Invalid input. Please enter P, U, M, I, L, R, or X.");
-                    MainMenu(); // Call the MainMenu method again for valid input
-                    break;
+                switch (choice)
+                {
+                    case "1": DisplayDashboard(); break;
+                    case "2": GoToPropertyClass(); break;
+                    case "3": GoToUserMenu(); break;
+                    case "4": GoToMaintenanceMenu(); break;
+                    case "5": GoToInspectionMenu(); break;
+                    case "6": GoToLeaseClass(); break;
+                    case "7": GoToPaymentClass(); break;
+                    case "B": continue;
+                    case "X":
+                        PrintColoredText("  Exiting the program. Goodbye!\n", ConsoleColor.Yellow);
+                        Environment.Exit(0);
+                        break;
+                }
             }
+        }
 
+        private void DisplayDashboard()
+        {
+            Console.Clear();
+            PrintColoredText("====================================\n", ConsoleColor.Cyan);
+            PrintColoredText("  Dashboard\n", ConsoleColor.Cyan);
+            PrintColoredText("====================================\n", ConsoleColor.Cyan);
+            Console.WriteLine();
+            PrintColoredText($"  Total Properties: {Property.ListOfProperties.Count}\n", ConsoleColor.White);
+            PrintColoredText($"  Total Leases: {Lease.ListOfLeases.Count}\n", ConsoleColor.White);
+            PrintColoredText($"  Total Payments: {Payment.ListOfPayments.Count}\n", ConsoleColor.White);
+            PrintColoredText($"  Upcoming Inspections: {inspectionManager.GetUpcomingInspections().Count}\n", ConsoleColor.White);
+            PrintColoredText($"  Overdue Maintenance Tasks: {maintenanceManager.GetOverdueTasks().Count}\n", ConsoleColor.White);
+            Console.WriteLine();
+            PrintColoredText("  Press any key to return to the main menu.\n", ConsoleColor.Yellow);
+            Console.ReadKey();
+            MainMenu();
         }
 
         public void GoToPropertyClass()
         {
-            Console.WriteLine("Welcome to the properties.\n" +
-            "Please select a letter corresponding to what you need to do\n" +
-            "C: Create a new property\n" +
-            "V: View a Property\n" +
-            "E: Edit a property\n" +
-            "A: View all properties\n");
+            string[] options = {
+                "Create a new property",
+                "View a property",
+                "Edit a property",
+                "Search properties",
+                "View all properties"
+            };
 
-            string response = Console.ReadLine().ToUpper();
-
-            switch (response)
+            while (true)
             {
-                case "C":
-                    Property newProperty = Property.CreateProperty();
-                    Property.AddProperty(newProperty);// Add the new property to the list
-                    Console.WriteLine("Your property has been created successfully!");
-                    ClassToMenu("Property", GoToPropertyClass); // Call the method to return to the property menu or main menu
-                    break;
+                DisplayMenu("Properties", options);
+                string choice = GetUserChoice(options.Length);
 
-                case "V":
-                    ViewPropertyDetails(); // Call the method to view property details
-                    ClassToMenu("Property", GoToPropertyClass); // Call the method to return to the property menu or main menu
-                    break;
-
-                case "A":
-                    DisplayAllProperties(); // Call the method to display all properties
-                    ClassToMenu("Property", GoToPropertyClass); // Call the method to return to the property menu or main menu
-                    break;
-
-        // case "E":
-        // //Edit a property
-        // break;
-
-                default:
-                    Console.WriteLine("Invalid input. Please enter C, V, E, or A");
-                    break;
-
+                switch (choice)
+                {
+                    case "1":
+                        Property newProperty = Property.CreateProperty();
+                        Property.AddProperty(newProperty);
+                        PrintColoredText($"  Property at {newProperty.Address} created successfully!\n", ConsoleColor.Green);
+                        PauseAndReturn(() => GoToPropertyClass());
+                        break;
+                    case "2":
+                        ViewPropertyDetails();
+                        break;
+                    case "3":
+                        EditProperty();
+                        break;
+                    case "4":
+                        SearchProperties();
+                        break;
+                    case "5":
+                        DisplayAllProperties();
+                        PauseAndReturn(() => GoToPropertyClass());
+                        break;
+                    case "B": MainMenu(); return;
+                    case "X": Environment.Exit(0); break;
+                }
             }
+        }
+
+        private void EditProperty()
+        {
+            PrintColoredText("  Enter the Property ID to edit: ", ConsoleColor.Green);
+            if (!int.TryParse(Console.ReadLine(), out int propertyID))
+            {
+                PrintColoredText("  Invalid ID. Please enter a number.\n", ConsoleColor.Red);
+                PauseAndReturn(() => GoToPropertyClass());
+                return;
+            }
+
+            Property property = Property.ListOfProperties.Find(p => p.PropertyID == propertyID);
+            if (property == null)
+            {
+                PrintColoredText("  Property not found.\n", ConsoleColor.Red);
+                PauseAndReturn(() => GoToPropertyClass());
+                return;
+            }
+
+            PrintColoredText("  Enter new details (press Enter to keep current value):\n", ConsoleColor.Yellow);
+            PrintColoredText($"  Address ({property.Address}): ", ConsoleColor.Green);
+            string address = Console.ReadLine();
+            if (!string.IsNullOrEmpty(address)) property.Address = address;
+
+            PrintColoredText($"  Bedrooms ({property.Bedrooms}): ", ConsoleColor.Green);
+            if (int.TryParse(Console.ReadLine(), out int bedrooms)) property.Bedrooms = bedrooms;
+
+            PrintColoredText($"  Bathrooms ({property.Baths}): ", ConsoleColor.Green);
+            if (int.TryParse(Console.ReadLine(), out int baths)) property.Baths = baths;
+
+            PrintColoredText($"  Monthly Rent ({property.MonthlyRent}): ", ConsoleColor.Green);
+            if (int.TryParse(Console.ReadLine(), out int rent)) property.MonthlyRent = rent;
+
+            Property.SaveToFile();
+            PrintColoredText("  Property updated successfully!\n", ConsoleColor.Green);
+            PauseAndReturn(() => GoToPropertyClass());
+        }
+
+        private void SearchProperties()
+        {
+            PrintColoredText("  Enter search term (address or ID): ", ConsoleColor.Green);
+            string searchTerm = Console.ReadLine().ToLower();
+            var results = Property.ListOfProperties
+                .Where(p => p.Address.ToLower().Contains(searchTerm) || p.PropertyID.ToString().Contains(searchTerm))
+                .ToList();
+
+            if (results.Count == 0)
+            {
+                PrintColoredText("  No properties found.\n", ConsoleColor.Red);
+            }
+            else
+            {
+                PrintColoredText("  Search Results:\n", ConsoleColor.Cyan);
+                foreach (var property in results)
+                {
+                    property.DisplayPropertyDetails();
+                }
+            }
+            PauseAndReturn(() => GoToPropertyClass());
         }
 
         public void GoToUserMenu()
         {
-            Console.WriteLine("1: Add Tenant\n2: Add Staff\n3: Remove User\n4: Show All Users\n5: Back");
-            string choice = Console.ReadLine();
+            string[] options = {
+                "Add Tenant",
+                "Add Staff",
+                "Add Generic User",
+                "Remove User",
+                "Show All Users"
+            };
 
-            switch (choice)
+            while (true)
             {
-                case "1":
-                    var tenant = TenantManager.CreateTenantFromInput();
-                    userManager.AddUser(tenant);
-                    break;
-                case "2":
-                    Console.Write("Name: ");
-                    string staffName = Console.ReadLine();
-                    Console.Write("Phone Number: ");
-                    string staffPhone = Console.ReadLine();
-                    Console.Write("Email: ");
-                    string staffEmail = Console.ReadLine();
-                    var staff = new Staff { Name = staffName, PhoneNumber = staffPhone, Email = staffEmail };
-                    userManager.AddUser(staff);
-                    break;
-                case "3":
-                    Console.Write("Email of user to remove: ");
-                    string emailToRemove = Console.ReadLine();
-                    userManager.RemoveUser(emailToRemove);
-                    break;
-                case "4":
-                    var allUsers = userManager.GetAllUsers();
-                    foreach (var u in allUsers)
-                    {
-                        Console.WriteLine($"{u.GetType().Name}: {u.Name} - {u.Email}");
-                    }
-                    break;
-                case "5":
-                    MainMenu();
-                    return;
-                default:
-                    Console.WriteLine("Invalid option.");
-                    break;
+                DisplayMenu("Users", options);
+                string choice = GetUserChoice(options.Length);
+
+                switch (choice)
+                {
+                    case "1":
+                        var tenant = TenantManager.CreateTenantFromInput();
+                        userManager.AddUser(tenant);
+                        PauseAndReturn(() => GoToUserMenu());
+                        break;
+                    case "2":
+                        PrintColoredText("  Name: ", ConsoleColor.Green);
+                        string staffName = Console.ReadLine();
+                        PrintColoredText("  Phone Number: ", ConsoleColor.Green);
+                        string staffPhone = Console.ReadLine();
+                        PrintColoredText("  Email: ", ConsoleColor.Green);
+                        string staffEmail = Console.ReadLine();
+                        var staff = new Staff { Name = staffName, PhoneNumber = staffPhone, Email = staffEmail };
+                        userManager.AddUser(staff);
+                        PauseAndReturn(() => GoToUserMenu());
+                        break;
+                    case "3":
+                        PrintColoredText("  Name: ", ConsoleColor.Green);
+                        string name = Console.ReadLine();
+                        PrintColoredText("  Phone Number: ", ConsoleColor.Green);
+                        string phone = Console.ReadLine();
+                        PrintColoredText("  Email: ", ConsoleColor.Green);
+                        string email = Console.ReadLine();
+                        var user = new User { Name = name, PhoneNumber = phone, Email = email };
+                        userManager.AddUser(user);
+                        PauseAndReturn(() => GoToUserMenu());
+                        break;
+                    case "4":
+                        PrintColoredText("  Email of user to remove: ", ConsoleColor.Green);
+                        string emailToRemove = Console.ReadLine();
+                        userManager.RemoveUser(emailToRemove);
+                        PauseAndReturn(() => GoToUserMenu());
+                        break;
+                    case "5":
+                        var allUsers = userManager.GetAllUsers();
+                        if (allUsers.Count == 0)
+                            PrintColoredText("  No users found.\n", ConsoleColor.Red);
+                        else
+                            foreach (var u in allUsers)
+                                PrintColoredText($"  {u.GetType().Name}: {u.Name} - {u.Email}\n", ConsoleColor.White);
+                        PauseAndReturn(() => GoToUserMenu());
+                        break;
+                    case "B": MainMenu(); return;
+                    case "X": Environment.Exit(0); break;
+                }
             }
-            // GoToUserMenu();
-            ClassToMenu("User", GoToUserMenu);
         }
 
         public void GoToMaintenanceMenu()
         {
-            Console.WriteLine("\nMaintenance Menu:\n1. Add Task\n2. Update Task\n3. List Tasks\n4. Back to Main Menu");
-            string choice = Console.ReadLine();
+            string[] options = {
+                "Add Task",
+                "Update Task",
+                "List Tasks",
+                "Remove Task"
+            };
 
-            switch (choice)
+            while (true)
             {
-                case "1":
-                    maintenanceManager.AddTask(maintenanceManager.CreateMaintenancePrompt());
-                    break;
-                case "2":
-                    Console.Write("Enter title to update: ");
-                    string title = Console.ReadLine();
-                    Console.Write("Mark as complete? y/n: ");
-                    bool isCompleted = Console.ReadLine().ToLower() == "y";
-                    maintenanceManager.UpdateTask(title, isCompleted);
-                    break;
-                case "3":
-                    NestedGetTasks();
-                    break;
-                case "4":
-                    MainMenu();
-                    return;
-                default:
-                    Console.WriteLine("Invalid choice.");
-                    break;
+                DisplayMenu("Maintenance", options);
+                string choice = GetUserChoice(options.Length);
+
+                switch (choice)
+                {
+                    case "1":
+                        maintenanceManager.AddTask(maintenanceManager.CreateMaintenancePrompt());
+                        PauseAndReturn(() => GoToMaintenanceMenu());
+                        break;
+                    case "2":
+                        PrintColoredText("  Enter title to update: ", ConsoleColor.Green);
+                        string title = Console.ReadLine();
+                        PrintColoredText("  Mark as complete? (y/n): ", ConsoleColor.Green);
+                        bool isCompleted = Console.ReadLine().ToLower() == "y";
+                        maintenanceManager.UpdateTask(title, isCompleted);
+                        PauseAndReturn(() => GoToMaintenanceMenu());
+                        break;
+                    case "3":
+                        NestedGetTasks();
+                        break;
+                    case "4":
+                        PrintColoredText("  Enter title to remove: ", ConsoleColor.Green);
+                        string removeTitle = Console.ReadLine();
+                        maintenanceManager.RemoveTask(removeTitle);
+                        PauseAndReturn(() => GoToMaintenanceMenu());
+                        break;
+                    case "B": MainMenu(); return;
+                    case "X": Environment.Exit(0); break;
+                }
             }
-            // GoToMaintenanceMenu();
-            ClassToMenu("Maintenance", GoToMaintenanceMenu);
         }
 
         public void NestedGetTasks()
         {
-            Console.WriteLine("\nFilter List Tasks:\n1. Overdue\n2. Priority\n3. Upcoming\n4. No Filter");
-            string choice = Console.ReadLine();
+            string[] options = {
+                "Overdue",
+                "High Priority",
+                "Upcoming",
+                "All Tasks"
+            };
 
-            switch (choice)
+            DisplayMenu("List Maintenance Tasks", options);
+            string choice = GetUserChoice(options.Length);
+
+            List<Maintenance> tasks = choice switch
             {
-                case "1":
-                    var due = maintenanceManager.GetOverdueTasks();
-                    foreach (var task in due)
-                    {
-                        Console.WriteLine($"Title:{task.Title}, Completed? {(task.Completed ? 'y' : 'n')}, Priority: {task.Priority}");
-                    }
-                    break;
+                "1" => maintenanceManager.GetOverdueTasks(),
+                "2" => maintenanceManager.GetHighPriorityTasks(),
+                "3" => maintenanceManager.GetUpcomingTasks(7),
+                _ => maintenanceManager.GetAllTasks()
+            };
 
-                case "2":
-                    var priority = maintenanceManager.GetHighPriorityTasks();
-                    foreach (var task in priority)
-                    {
-                        Console.WriteLine($"Title:{task.Title}, Completed? {(task.Completed ? 'y' : 'n')}, Priority: {task.Priority}");
-                    }
-                    break;
+            if (tasks.Count == 0)
+                PrintColoredText("  No tasks found.\n", ConsoleColor.Red);
+            else
+                foreach (var task in tasks)
+                    PrintColoredText($"  {task}\n", ConsoleColor.White);
 
-                case "3":
-                    Console.WriteLine("Tasks for the next 7 days:");
-                    var recent = maintenanceManager.GetUpcomingTasks(7);
-                    foreach (var task in recent)
-                    {
-                        Console.WriteLine($"Title:{task.Title}, Completed? {(task.Completed ? 'y' : 'n')}, Priority: {task.Priority}");
-                    }
-                    break;
-
-                default:
-                    var tasks = maintenanceManager.GetAllTasks();
-                    foreach (var task in tasks)
-                    {
-                        Console.WriteLine($"Title:{task.Title}, Completed? {(task.Completed ? 'y' : 'n')}, Priority: {task.Priority}");
-                    }
-                    break;
-            }
+            PauseAndReturn(() => GoToMaintenanceMenu());
         }
 
         public void GoToInspectionMenu()
         {
-            Console.WriteLine("\nInspection Menu:\n1. Schedule Inspection\n2. List Inspections\n3. Remove Inspection\n4. Back to Main Menu");
-            string choice = Console.ReadLine();
+            string[] options = {
+                "Schedule Inspection",
+                "List Inspections",
+                "Remove Inspection",
+                "Generate Inspection Report"
+            };
 
-            switch (choice)
+            while (true)
             {
-                case "1":
-                    Console.Write("Enter inspection type: ");
-                    string type = Console.ReadLine();
+                DisplayMenu("Inspections", options);
+                string choice = GetUserChoice(options.Length);
 
-                    Console.Write("Enter property ID: ");
-                    string propertyID = Console.ReadLine();
-
-                    Console.Write("Enter property address: ");
-                    string address = Console.ReadLine();
-
-                    Console.Write("Enter inspector name: ");
-                    string inspector = Console.ReadLine();
-
-                    Console.Write("Enter date (MM/DD/YYYY): ");
-                    DateTime date;
-
-                    while (!DateTime.TryParse(Console.ReadLine(), out date))
-                    {
-                        Console.Write("Invalid date. Please enter again (MM/DD/YYYY): ");
-                    }
-
-                    var inspection = new Inspection();
-                    inspection.Schedule(type, date, propertyID, address, inspector);
-                    inspectionManager.AddInspection(inspection);
-                    break;
-
-                case "2":
-                    var all = inspectionManager.GetAllInspections();
-                    if (all.Count == 0)
-                    {
-                        Console.WriteLine("No inspections found.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("\nInspections:");
-                        foreach (var ins in all)
+                switch (choice)
+                {
+                    case "1":
+                        PrintColoredText("  Enter inspection type: ", ConsoleColor.Green);
+                        string type = Console.ReadLine();
+                        PrintColoredText("  Enter property ID: ", ConsoleColor.Green);
+                        string propertyID = Console.ReadLine();
+                        PrintColoredText("  Enter property address: ", ConsoleColor.Green);
+                        string address = Console.ReadLine();
+                        PrintColoredText("  Enter inspector name: ", ConsoleColor.Green);
+                        string inspector = Console.ReadLine();
+                        PrintColoredText("  Enter date (MM/DD/YYYY): ", ConsoleColor.Green);
+                        DateTime date;
+                        while (!DateTime.TryParse(Console.ReadLine(), out date))
                         {
-                            Console.WriteLine(ins);
+                            PrintColoredText("  Invalid date. Please enter again (MM/DD/YYYY): \n", ConsoleColor.Red);
                         }
-                    }
-                    break;
-                case "3":
-                    Console.Write("Enter property ID of inspection to remove: ");
-                    string pID = Console.ReadLine();
-
-                    Console.Write("Enter date of inspection to remove (MM/DD/YYYY): ");
-                    DateTime removeDate;
-                    while (!DateTime.TryParse(Console.ReadLine(), out removeDate))
-                    {
-                        Console.Write("Invalid date. Please enter again (MM/DD/YYYY): ");
-                    }
-                    inspectionManager.RemoveInspection(pID, removeDate);
-                    break;
-                case "4":
-                    MainMenu();
-                    return;
-                default:
-                    Console.WriteLine("Invalid choice.");
-                    break;
+                        var inspection = new Inspection();
+                        inspection.Schedule(type, date, propertyID, address, inspector);
+                        inspectionManager.AddInspection(inspection);
+                        PauseAndReturn(() => GoToInspectionMenu());
+                        break;
+                    case "2":
+                        var all = inspectionManager.GetAllInspections();
+                        if (all.Count == 0)
+                            PrintColoredText("  No inspections found.\n", ConsoleColor.Red);
+                        else
+                            foreach (var ins in all)
+                                PrintColoredText($"  {ins}\n", ConsoleColor.White);
+                        PauseAndReturn(() => GoToInspectionMenu());
+                        break;
+                    case "3":
+                        PrintColoredText("  Enter property ID of inspection to remove: ", ConsoleColor.Green);
+                        string pID = Console.ReadLine();
+                        PrintColoredText("  Enter date of inspection to remove (MM/DD/YYYY): ", ConsoleColor.Green);
+                        DateTime removeDate;
+                        while (!DateTime.TryParse(Console.ReadLine(), out removeDate))
+                        {
+                            PrintColoredText("  Invalid date. Please enter again (MM/DD/YYYY): \n", ConsoleColor.Red);
+                        }
+                        inspectionManager.RemoveInspection(pID, removeDate);
+                        PauseAndReturn(() => GoToInspectionMenu());
+                        break;
+                    case "4":
+                        GenerateInspectionReport();
+                        PauseAndReturn(() => GoToInspectionMenu());
+                        break;
+                    case "B": MainMenu(); return;
+                    case "X": Environment.Exit(0); break;
+                }
             }
-            // GoToInspectionMenu();
-            ClassToMenu("Inspection", GoToInspectionMenu);
         }
 
+        private void GenerateInspectionReport()
+        {
+            PrintColoredText("  Enter property ID of inspection: ", ConsoleColor.Green);
+            string pID = Console.ReadLine();
+            var inspections = inspectionManager.GetAllInspections().Where(i => i.PropertyID == pID).ToList();
+            if (inspections.Count == 0)
+            {
+                PrintColoredText("  No inspections found for this property.\n", ConsoleColor.Red);
+                return;
+            }
+
+            PrintColoredText("  Inspection Reports:\n", ConsoleColor.Cyan);
+            foreach (var ins in inspections)
+            {
+                if (ins.ReportGenerated)
+                    PrintColoredText($"  {ins.ReportContent}\n", ConsoleColor.White);
+                else
+                    PrintColoredText($"  No report generated for {ins.Type} on {ins.DateScheduled.ToShortDateString()}.\n", ConsoleColor.Yellow);
+            }
+        }
 
         public void GoToLeaseClass()
         {
-            Console.WriteLine("Welcome to the Lease Menu.\n" +
-        "Please select a letter corresponding to what you need to do\n" +
-        "C: Create a new Lease\n" +
-        "V: View a Lease\n" +
-        "E: Edit a Lease\n" +
-        "A: View all Leases\n");
+            string[] options = {
+                "Create a new lease",
+                "View a lease",
+                "Edit a lease",
+                "View all leases"
+            };
 
-            string response = Console.ReadLine().ToUpper();
-
-            switch (response)
+            while (true)
             {
-                case "C":
-                    Lease newLease = Lease.CreateLease();
-                    Lease.AddLease(newLease);// Add the new lease to the list
-                    Console.WriteLine("Your lease has been created successfully!");
-                    ClassToMenu("Lease", GoToLeaseClass); // Call the method to return to the lease menu or main menu
-                    break;
+                DisplayMenu("Leases", options);
+                string choice = GetUserChoice(options.Length);
 
-                case "V":
-                    ViewLeaseDetails(); // Call the method to view lease details
-                    ClassToMenu("Lease", GoToLeaseClass); // Call the method to return to the lease menu or main menu
-                    break;
-
-                case "A":
-                    DisplayAllLeases(); // Call the method to display all leases    
-                    ClassToMenu("Lease", GoToLeaseClass); // Call the method to return to the lease menu or main menu
-                    break;
-
-        case "E":
-        //Edit a property
-        break;
-
-                default:
-                    Console.WriteLine("Invalid input. Please enter C, V, E, A");
-                    break;
+                switch (choice)
+                {
+                    case "1":
+                        Lease newLease = Lease.CreateLease();
+                        Lease.AddLease(newLease);
+                        PrintColoredText("  Lease created successfully!\n", ConsoleColor.Green);
+                        PauseAndReturn(() => GoToLeaseClass());
+                        break;
+                    case "2":
+                        ViewLeaseDetails();
+                        break;
+                    case "3":
+                        EditLease();
+                        break;
+                    case "4":
+                        DisplayAllLeases();
+                        PauseAndReturn(() => GoToLeaseClass());
+                        break;
+                    case "B": MainMenu(); return;
+                    case "X": Environment.Exit(0); break;
+                }
             }
+        }
+
+        private void EditLease()
+        {
+            PrintColoredText("  Enter the Lease ID to edit: ", ConsoleColor.Green);
+            if (!int.TryParse(Console.ReadLine(), out int leaseID))
+            {
+                PrintColoredText("  Invalid ID. Please enter a number.\n", ConsoleColor.Red);
+                PauseAndReturn(() => GoToLeaseClass());
+                return;
+            }
+
+            Lease lease = Lease.ListOfLeases.Find(l => l.LeaseID == leaseID);
+            if (lease == null)
+            {
+                PrintColoredText("  Lease not found.\n", ConsoleColor.Red);
+                PauseAndReturn(() => GoToLeaseClass());
+                return;
+            }
+
+            PrintColoredText("  Enter new details (press Enter to keep current value):\n", ConsoleColor.Yellow);
+            PrintColoredText($"  Lease Term ({lease.leaseTerm}): ", ConsoleColor.Green);
+            if (int.TryParse(Console.ReadLine(), out int term)) lease.leaseTerm = term;
+
+            PrintColoredText($"  Monthly Payment ({lease.payment}): ", ConsoleColor.Green);
+            if (double.TryParse(Console.ReadLine(), out double payment)) lease.payment = payment;
+
+            PrintColoredText($"  Security Deposit ({lease.deposit}): ", ConsoleColor.Green);
+            if (double.TryParse(Console.ReadLine(), out double deposit)) lease.deposit = deposit;
+
+            Lease.SaveToFile();
+            PrintColoredText("  Lease updated successfully!\n", ConsoleColor.Green);
+            PauseAndReturn(() => GoToLeaseClass());
         }
 
         public void GoToPaymentClass()
         {
-            Console.WriteLine("Welcome to the Payments Menu.\n" +
-                              "Please select what you want to do:\n" +
-                              "C: Create a new Payment\n" +
-                              "V: View a Payment\n" +
-                              "A: View all Payments");
+            string[] options = {
+                "Create a new payment",
+                "View a payment",
+                "View all payments"
+            };
 
-            string response = Console.ReadLine().ToUpper();
-
-            switch (response)
+            while (true)
             {
-                case "C":
-                    Payment newPayment = Payment.CreatePayment();
-                    Payment.AddPayment(newPayment); // Add the new payment to the list
-                    Console.WriteLine("Your payment has been created successfully!");
-                    ClassToMenu("Payment", GoToPaymentClass); // Call the method to return to the payment menu or main menu
-                    break;
+                DisplayMenu("Payments", options);
+                string choice = GetUserChoice(options.Length);
 
-                case "V":
-                    ViewPaymentDetails();
-                    ClassToMenu("Payment", GoToPaymentClass); // Call the method to return to the payment menu or main menu
-                    break;
-
-                case "A":
-                    DisplayAllPayments(); // Call the method to display all payments
-                    ClassToMenu("Payment", GoToPaymentClass); // Call the method to return to the payment menu or main menu
-                    break;
-
-                default:
-                    Console.WriteLine("Invalid input. Please enter C, V, or A.");
-                    GoToPaymentClass();
-                    break;
+                switch (choice)
+                {
+                    case "1":
+                        Payment newPayment = Payment.CreatePayment();
+                        Payment.AddPayment(newPayment);
+                        PrintColoredText("  Payment created successfully!\n", ConsoleColor.Green);
+                        PauseAndReturn(() => GoToPaymentClass());
+                        break;
+                    case "2":
+                        ViewPaymentDetails();
+                        break;
+                    case "3":
+                        DisplayAllPayments();
+                        PauseAndReturn(() => GoToPaymentClass());
+                        break;
+                    case "B": MainMenu(); return;
+                    case "X": Environment.Exit(0); break;
+                }
             }
         }
 
-public void ViewPaymentDetails()
-{
-    if (Payment.ListOfPayments.Count == 0)
-    {
-        Console.WriteLine("There are no payments to view.");
-        ClassToMenu("Payment", GoToPaymentClass);
-        return;
-    }
-
-    Console.WriteLine("Enter the Payment ID you'd like to view:");
-    int id = UI.GetValidatedInt("");
-
-    Payment match = Payment.ListOfPayments.Find(p => p.PaymentID == id);
-    if (match != null)
-    {
-        match.DisplayPaymentDetails();
-        ClassToMenu("Payment", GoToPaymentClass);
-    }
-    else
-    {
-        Console.WriteLine("No payment found with that ID.");
-        ViewPaymentDetails();
-    }
-}
-
-
-        public void ClassToMenu(string menuName, Action subMenu)
+        public void ViewPaymentDetails()
         {
-            Console.WriteLine("Would you like to return to the " + menuName + " menu? (Y/N)");
-            string response = Console.ReadLine().ToUpper();
-
-            if (response == "Y")
+            if (Payment.ListOfPayments.Count == 0)
             {
-                subMenu(); // Call the method again to go to the class menu
+                PrintColoredText("  There are no payments to view.\n", ConsoleColor.Red);
+                PauseAndReturn(() => GoToPaymentClass());
+                return;
             }
-            else if (response == "N")
+
+            PrintColoredText("  Enter the Payment ID you'd like to view: ", ConsoleColor.Green);
+            int id = GetValidatedInt("");
+            Payment match = Payment.ListOfPayments.Find(p => p.PaymentID == id);
+            if (match != null)
             {
-                Console.WriteLine("Returning to main menu...");
-                MainMenu(); // Return to the main menu
+                match.DisplayPaymentDetails();
+                PauseAndReturn(() => GoToPaymentClass());
             }
             else
             {
-                Console.WriteLine("Invalid input. Returning to main menu...");
-                MainMenu(); // Return to the main menu
+                PrintColoredText("  No payment found with that ID.\n", ConsoleColor.Red);
+                PauseAndReturn(() => ViewPaymentDetails());
             }
         }
 
-    public void ViewPropertyDetails()
-{
-    Console.WriteLine("Please enter the property ID you would like to view:");
-    string input = Console.ReadLine();
-    int propertyID;
+        public void ViewPropertyDetails()
+        {
+            PrintColoredText("  Enter the Property ID you'd like to view: ", ConsoleColor.Green);
+            if (!int.TryParse(Console.ReadLine(), out int propertyID))
+            {
+                PrintColoredText("  Invalid input. Please enter a number.\n", ConsoleColor.Red);
+                PauseAndReturn(() => ViewPropertyDetails());
+                return;
+            }
 
-    if (int.TryParse(input, out propertyID))
-    {
-        Property match = Property.ListOfProperties.Find(p => p.PropertyID == propertyID);
-        if (match != null)
-        {
-            match.DisplayPropertyDetails(); // Call the instance method on the matched property
-            ClassToMenu("Property", GoToPropertyClass); // Call the method to return to the property menu or main menu
+            Property match = Property.ListOfProperties.Find(p => p.PropertyID == propertyID);
+            if (match != null)
+            {
+                match.DisplayPropertyDetails();
+                PauseAndReturn(() => GoToPropertyClass());
+            }
+            else
+            {
+                PrintColoredText("  No property found with that ID.\n", ConsoleColor.Red);
+                PauseAndReturn(() => ViewPropertyDetails());
+            }
         }
-        else
-        {
-            Console.WriteLine("Invalid Property ID. Please try again.");
-            ViewPropertyDetails(); // Ask again
-        }
-    }
-    else
-    {
-        Console.WriteLine("Invalid input. Please enter a number for the Property ID.");
-        ViewPropertyDetails(); // Ask again
-    }
-}
 
-public void ViewLeaseDetails()
-{
-    Console.WriteLine("Please enter the lease term you would like to view:");
-    string input = Console.ReadLine();
-    int leaseID;
+        public void ViewLeaseDetails()
+        {
+            PrintColoredText("  Enter the Lease ID you'd like to view: ", ConsoleColor.Green);
+            if (!int.TryParse(Console.ReadLine(), out int leaseID))
+            {
+                PrintColoredText("  Invalid input. Please enter a number.\n", ConsoleColor.Red);
+                PauseAndReturn(() => ViewLeaseDetails());
+                return;
+            }
 
-    if (int.TryParse(input, out leaseID))
-    {
-        Lease match = Lease.ListOfLeases.Find(l => l.LeaseID == leaseID);
-        if (match != null)
-        {
-            match.DisplayLeaseDetails(); // Call the instance method on the matched lease
-            ClassToMenu("Lease", GoToLeaseClass); // Generic method to go back
+            Lease match = Lease.ListOfLeases.Find(l => l.LeaseID == leaseID);
+            if (match != null)
+            {
+                match.DisplayLeaseDetails();
+                PauseAndReturn(() => GoToLeaseClass());
+            }
+            else
+            {
+                PrintColoredText("  No lease found with that ID.\n", ConsoleColor.Red);
+                PauseAndReturn(() => ViewLeaseDetails());
+            }
         }
-        else
-        {
-            Console.WriteLine("Invalid Lease Term. Please try again.");
-            ViewLeaseDetails(); // Ask again
-        }
-    }
-    else
-    {
-        Console.WriteLine("Invalid input. Please enter a number for the Lease Term.");
-        ViewLeaseDetails(); // Ask again
-    }
-}
 
         public void DisplayAllLeases()
         {
             if (Lease.ListOfLeases.Count == 0)
             {
-                Console.WriteLine("No leases to display.");
+                PrintColoredText("  No leases to display.\n", ConsoleColor.Red);
                 return;
             }
 
@@ -504,7 +624,7 @@ public void ViewLeaseDetails()
         {
             if (Payment.ListOfPayments.Count == 0)
             {
-                Console.WriteLine("No payments to display.");
+                PrintColoredText("  No payments to display.\n", ConsoleColor.Red);
                 return;
             }
 
@@ -518,80 +638,66 @@ public void ViewLeaseDetails()
         {
             if (Property.ListOfProperties.Count == 0)
             {
-                Console.WriteLine("No properties to display.");
+                PrintColoredText("  No properties to display.\n", ConsoleColor.Red);
                 return;
             }
 
-    foreach (Property property in Property.ListOfProperties)
-    {
-        property.DisplayPropertyDetails();
-    }
-    }
-
-    public static int GetValidatedInt(string prompt)
-{
-    int value;
-    while (true)
-    {
-        Console.Write(prompt);
-        string input = Console.ReadLine();
-        if (int.TryParse(input, out value))
-            return value;
-
-        Console.WriteLine("Invalid input. Please enter a valid number.");
-    }
-}
-
-public static double GetValidatedDouble(string prompt)
-{
-    double value;
-    while (true)
-    {
-        Console.Write(prompt);
-        string input = Console.ReadLine();
-        if (double.TryParse(input, out value))
-            return value;
-
-        Console.WriteLine("Invalid input. Please enter a valid number.");
-    }
-}
-
-public static DateTime GetValidatedDateTime(string prompt)
-{
-    DateTime value;
-    while (true)
-    {
-        Console.Write(prompt);
-        string input = Console.ReadLine();
-        if (DateTime.TryParse(input, out value))
-            return value;
-
-        Console.WriteLine("Invalid date. Please enter the date in MM/DD/YYYY format.");
-    }
-}
-
-    
-
-        /*
-            public void ViewPropertyDetails()
+            foreach (Property property in Property.ListOfProperties)
             {
-                Console.WriteLine("Please enter the property ID you would like to view:");
-            int propertyID = int.Parse(Console.ReadLine());
+                property.DisplayPropertyDetails();
+            }
+        }
 
-            Property match = Property.ListOfProperties.Find(p => p.PropertyID == propertyID);
-            if (match != null)
+        private void PauseAndReturn(Action returnAction)
+        {
+            Console.WriteLine();
+            PrintColoredText("  Press any key to continue...\n", ConsoleColor.Yellow);
+            Console.ReadKey();
+            returnAction();
+        }
+
+        public static int GetValidatedInt(string prompt)
+        {
+            while (true)
             {
-                match.DisplayPropertyDetails(); // Call the instance method on the matched property
-                Console.WriteLine("Would you like to return to the property menu? (Y/N)");
-                string returnToPropertyMenu = Console.ReadLine().ToUpper();
-                PropertyToMenu(returnToPropertyMenu); // Call the method to return to the property menu or main menu
+                PrintColoredText($"  {prompt}", ConsoleColor.Green);
+                string input = Console.ReadLine();
+                if (int.TryParse(input, out int value))
+                    return value;
+                PrintColoredText("  Invalid input. Please enter a valid number.\n", ConsoleColor.Red);
             }
-            else
+        }
+
+        public static double GetValidatedDouble(string prompt)
+        {
+            while (true)
             {
-                Console.WriteLine("Invalid Property ID. Please try again.");
-                ViewPropertyDetails(); // Ask again
+                PrintColoredText($"  {prompt}", ConsoleColor.Green);
+                string input = Console.ReadLine();
+                if (double.TryParse(input, out double value))
+                    return value;
+                PrintColoredText("  Invalid input. Please enter a valid number.\n", ConsoleColor.Red);
             }
+        }
+
+        public static DateTime GetValidatedDateTime(string prompt)
+        {
+            while (true)
+            {
+                PrintColoredText($"  {prompt}", ConsoleColor.Green);
+                string input = Console.ReadLine();
+                if (DateTime.TryParse(input, out DateTime value))
+                    return value;
+                PrintColoredText("  Invalid date. Please enter the date in MM/DD/YYYY format.\n", ConsoleColor.Red);
             }
-            */
+        }
+
+        public static void PrintColoredText(string text, ConsoleColor color)
+        {
+            var originalColor = Console.ForegroundColor;
+            Console.ForegroundColor = color;
+            Console.Write(text);
+            Console.ForegroundColor = originalColor;
+        }
     }
 }
